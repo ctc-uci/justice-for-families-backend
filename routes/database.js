@@ -8,6 +8,7 @@ async function connect() {
         if (err) {
             console.log(err)
         } else {
+            console.log("connection successful")
             const db = client.db("database")
             return db
         }
@@ -40,4 +41,3 @@ async function findComment(db, query) {
 }
 
 module.exports = router
-
