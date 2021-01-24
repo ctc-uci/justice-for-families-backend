@@ -7,7 +7,7 @@ const postSchema = new Schema({
     username: {type: String, required: true},
     anonymous: {type: Boolean, required: true},
     tags: {type: Array, required: true},
-    datePosted: {type: Date, required:false},
+    datePosted: {type: Date, required:true},
     numComments: {type: Number, required: true},
     title: {type: String, required: true},
     media: {type: String, required: false}

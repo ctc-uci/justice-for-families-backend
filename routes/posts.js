@@ -10,7 +10,17 @@ router.route('/').get((req, res) => {
   res.send("Hello world");
 })
 
-router.route('/add').post( (req,res) => {
+router.route('/add').post( [
+  check('username').isLength({min:1, max:20}).withMessage("Invalid username length, should be between 1, 20."),
+  check('text').isLength({min:1, max:1000}).withMessage("Invalid text length, must be between 1, 1000."),
+  check('anonymous').isBoolean().withMessage("Invalid anonymity value, should be boolean."),
+  // need a standard for date posted
+  check('datePosted').notEmpty().withMessage("Invalid date value, received none."),
+  // need a standard for tag case sensitivity
+  check('tags').notEmpty().withMessage("Invalid tags value, should not be empty."),
+  check('numComments').isNumeric().withMessage("Invalid type for numComments, should be of Number type."),
+  check('title').notEmpty().withMessage("Invalid title, should not be empty."),
+], (req,res) => {
   query = {
     "_id" : new mongoose.Types.ObjectId(),
     "text" : req.body.text,
@@ -22,19 +32,14 @@ router.route('/add').post( (req,res) => {
     "title" : req.body.title,
     "media" : req.body.media
   }
-
-  check('username').isLength({min:5});
-  console.log('username');
+  const errors = validationResult(req);
   console.log('errors:', validationResult(req));
-  /*
-  check(query["text"]).isLength({max:250});
-  check(query["username"]).isLength({min:3});
-  check(query["anonymous"]).isBoolean();
-  check(query["tags"]).isArray();
-  check(query["numComments"]).isNumeric();
-  check(query["title"]).isLength({min:3});
-  console.log(query["username"].length)
-  */
+
+  if (!errors.isEmpty())  {
+      return res.status(400).send({
+        message: errors
+      })
+  }
  
   const newPost = new Post(query);
 
