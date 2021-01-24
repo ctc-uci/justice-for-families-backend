@@ -20,10 +20,13 @@ connection.once('open', () => {
 
 // posts router
 const postsRouter = require('./routes/posts');
+// likes router
+const likesRouter = require('./routes/likes');
 
 app.use('/authentication', require('./routes/authentication'));
 // app.use('/database', require('./routes/database'));
 app.use('/posts', postsRouter);
+app.use('/likes', likesRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);

@@ -16,7 +16,7 @@
     "express": "^4.17.1",
     "express-validator": "^6.9.2",
     "mongodb": "^3.6.3",
-    "mongoose": "^5.11.5",
+    "mongoose": "^5.11.13",
     "nodemon": "^2.0.6"
   }
 }

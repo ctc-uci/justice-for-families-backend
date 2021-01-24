@@ -10,8 +10,8 @@ const postSchema = new Schema({
     datePosted: {type: Date, required:false},
     numComments: {type: Number, required: true},
     title: {type: String, required: true},
-    media: {type: String, required: false}
-
+    media: {type: String, required: false},
+    likes: {type: Number, required: true}
   }, {
     timestamps: true,
 });

@@ -20,7 +20,8 @@ router.route('/add').post( (req,res) => {
     "tags" : req.body.tags,
     "numComments" : req.body.numComments,
     "title" : req.body.title,
-    "media" : req.body.media
+    "media" : req.body.media,
+    "likes" : req.body.likes
   }
 
   check('username').isLength({min:5});

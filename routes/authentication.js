@@ -1,4 +1,4 @@
-const router = require('express').Router()
+const router = require('express').Router();
 const Amplify = require('aws-amplify')
 const { Auth } = require('aws-amplify')
 
