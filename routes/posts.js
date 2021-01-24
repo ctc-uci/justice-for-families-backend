@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
 let Post = require('../models/post.model');
-const db = require('./database');
 const { check, validationResult } = require('express-validator');
 
 // import "./database";
@@ -10,7 +9,7 @@ router.route('/').get((req, res) => {
   res.send("Hello world");
 })
 
-router.route('/add').post( [
+router.route('/posts/create').post( [
   check('username').isLength({min:1, max:20}).withMessage("Invalid username length, should be between 1, 20."),
   check('text').isLength({min:1, max:1000}).withMessage("Invalid text length, must be between 1, 1000."),
   check('anonymous').isBoolean().withMessage("Invalid anonymity value, should be boolean."),
@@ -19,8 +18,17 @@ router.route('/add').post( [
   // need a standard for tag case sensitivity
   check('tags').notEmpty().withMessage("Invalid tags value, should not be empty."),
   check('numComments').isNumeric().withMessage("Invalid type for numComments, should be of Number type."),
-  check('title').notEmpty().withMessage("Invalid title, should not be empty."),
+  check('numLikes').isNumeric().withMessage("Invalid number of likes, should be numeric"),
+  check('title').notEmpty().withMessage("Invalid title, should not be empty.")
 ], (req,res) => {
+  
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return (res.status(400).send( {
+      message: "Errors: " + errors
+    }))
+  }
+
   query = {
     "_id" : new mongoose.Types.ObjectId(),
     "text" : req.body.text,
@@ -32,15 +40,7 @@ router.route('/add').post( [
     "title" : req.body.title,
     "media" : req.body.media
   }
-  const errors = validationResult(req);
-  console.log('errors:', validationResult(req));
 
-  if (!errors.isEmpty())  {
-      return res.status(400).send({
-        message: errors
-      })
-  }
- 
   const newPost = new Post(query);
 
   newPost.save()
@@ -49,6 +49,7 @@ router.route('/add').post( [
 
 })
 
+// need to update to find tag within tags array (might take a long time to load though)
 router.route('/tags/:tag').get((req, res) => {
   Post.find({tags: req.params.tag})
     .then(post => res.json(post))

@@ -20,10 +20,12 @@ connection.once('open', () => {
 
 // posts router
 const postsRouter = require('./routes/posts');
+const commentRouter = require('./routes/comments');
 
 app.use('/authentication', require('./routes/authentication'));
 // app.use('/database', require('./routes/database'));
 app.use('/posts', postsRouter);
+app.use('/comments', commentRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
