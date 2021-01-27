@@ -31,10 +31,12 @@ app.post('/register', async function(req, res) {
                 phone_number: ''
             }
         })
+        res.sendStatus(200) // OK
         res.redirect('/login')
         console.log(user)
     } catch (error) {
         console.log('error signing up:', error)
+        res.sendStatus(500) // server error
     }
 })
 
@@ -43,18 +45,22 @@ app.post('/login', async function(req, res) {
     const password = req.body.password
     try {
         await Auth.signIn(email, password)
+        res.sendStatus(200) // OK
         res.redirect('/logout')
     } catch (error) {
         console.log('error signing in', error)
+        res.sendStatus(500) // server error
     }
 })
 
 app.post('/logout', async function(req, res) {
     try {
         await Auth.signOut()
+        res.sendStatus(200) // OK
         res.redirect('/login')
     } catch (error) {
         console.log('error signing out', error)
+        res.sendStatus(500) // server error
     }
 })
 
@@ -66,8 +72,10 @@ app.post('/updatePicture', async function(req, res) {
             picture: updatedAttribute
         })
         console.log(result);
+        res.sendStatus(200) // OK
     } catch (error) {
         console.log('error updating attribute', error)
+        res.sendStatus(500) // server error
     }
 })
 
@@ -79,8 +87,10 @@ app.post('/updateName', async function(req, res) {
             Name: updatedAttribute
         })
         console.log(result);
+        res.sendStatus(200) // OK
     } catch (error) {
         console.log('error updating attribute', error)
+        res.sendStatus(500) // server error
     }
 })
 
@@ -92,8 +102,10 @@ app.post('/updatePhoneNumber', async function(req, res) {
             phone_number: updatedAttribute
         })
         console.log(result);
+        res.sendStatus(200) // OK
     } catch (error) {
         console.log('error updating attribute', error)
+        res.sendStatus(500) // server error
     }
 })
 
@@ -105,8 +117,10 @@ app.post('/updatePreferredUserName', async function(req, res) {
             preferred_username: updatedAttribute
         })
         console.log(result);
+        res.sendStatus(200) // OK
     } catch (error) {
         console.log('error updating attribute', error)
+        res.sendStatus(500) // server error
     }
 })
 
