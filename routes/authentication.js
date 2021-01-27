@@ -122,4 +122,4 @@ router.post('/update/preferredUserName', async function(req, res) {
     }
 })
 
-app.listen(3000)
+module.exports = router;
