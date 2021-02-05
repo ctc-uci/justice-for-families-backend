@@ -6,7 +6,7 @@ const Post = require('../models/post.model');
 router.post('/like', function(req, res) {
     query = {
         "_id": new mongoose.Types.ObjectId(),
-        "user": req.body.user,
+        "username": req.body.username,
         "date": new Date(),
         "postId": new mongoose.Types.ObjectId(req.body.postId)
     }
