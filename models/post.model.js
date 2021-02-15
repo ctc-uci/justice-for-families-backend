@@ -11,8 +11,8 @@ const postSchema = new Schema({
     numComments: {type: Number, required: true},
     // numLikes: {type:Number, required: true},
     title: {type: String, required: true},
-    media: {type: String, required: false}
-
+    media: {type: String, required: false},
+    likes: {type: Number, required: true}
   }, {
     timestamps: true,
 });

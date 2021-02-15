@@ -18,13 +18,14 @@ connection.once('open', () => {
   console.log("MongoDB database connection established!");
 });
 
-// posts router
 const postsRouter = require('./routes/posts');
+const likesRouter = require('./routes/likes');
 const commentRouter = require('./routes/comments');
 
 app.use('/authentication', require('./routes/authentication'));
 // app.use('/database', require('./routes/database'));
 app.use('/posts', postsRouter);
+app.use('/likes', likesRouter);
 app.use('/comments', commentRouter);
 
 app.listen(port, () => {

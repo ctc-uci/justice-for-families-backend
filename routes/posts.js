@@ -40,7 +40,8 @@ router.route('/create').post( [
     "tags" : req.body.tags,
     "numComments" : req.body.numComments,
     "title" : req.body.title,
-    "media" : req.body.media
+    "media" : req.body.media,
+    "likes" : req.body.likes
   }
   
   const newPost = new Post(query);
