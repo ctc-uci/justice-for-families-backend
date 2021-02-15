@@ -29,8 +29,12 @@ router.post('/register', async function(req, res) {
                 phone_number: ''
             }
         })
+        res.sendStatus(200) // OK
+        res.redirect('/login')
+        console.log(user)
     } catch (error) {
         console.log('error signing up:', error)
+        res.sendStatus(500) // server error
     }
 })
 
@@ -39,17 +43,22 @@ router.post('/login', async function(req, res) {
     const password = req.body.password
     try {
         await Auth.signIn(email, password)
+        res.sendStatus(200) // OK
+        res.redirect('/logout')
     } catch (error) {
         console.log('error signing in', error)
+        res.sendStatus(500) // server error
     }
 })
 
 router.post('/logout', async function(req, res) {
     try {
         await Auth.signOut()
+        res.sendStatus(200) // OK
         res.redirect('/login')
     } catch (error) {
         console.log('error signing out', error)
+        res.sendStatus(500) // server error
     }
 })
 
@@ -60,8 +69,11 @@ router.post('/update/picture', async function(req, res) {
         await Auth.updateUserAttributes(user, {
             picture: updatedAttribute
         })
+        console.log(result);
+        res.sendStatus(200) // OK
     } catch (error) {
         console.log('error updating attribute', error)
+        res.sendStatus(500) // server error
     }
 })
 
@@ -72,8 +84,11 @@ router.post('/update/name', async function(req, res) {
         await Auth.updateUserAttributes(user, {
             Name: updatedAttribute
         })
+        console.log(result);
+        res.sendStatus(200) // OK
     } catch (error) {
         console.log('error updating attribute', error)
+        res.sendStatus(500) // server error
     }
 })
 
@@ -84,8 +99,11 @@ router.post('/update/phoneNumber', async function(req, res) {
         await Auth.updateUserAttributes(user, {
             phone_number: updatedAttribute
         })
+        console.log(result);
+        res.sendStatus(200) // OK
     } catch (error) {
         console.log('error updating attribute', error)
+        res.sendStatus(500) // server error
     }
 })
 
@@ -96,9 +114,12 @@ router.post('/update/preferredUserName', async function(req, res) {
         await Auth.updateUserAttributes(user, {
             preferred_username: updatedAttribute
         })
+        console.log(result);
+        res.sendStatus(200) // OK
     } catch (error) {
         console.log('error updating attribute', error)
+        res.sendStatus(500) // server error
     }
 })
 
-module.exports = router
+module.exports = router;
