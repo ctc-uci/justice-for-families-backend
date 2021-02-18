@@ -9,7 +9,7 @@ const postSchema = new Schema({
     tags: {type: Array, required: true},
     datePosted: {type: Date, required:false},
     numComments: {type: Number, required: true},
-    // numLikes: {type:Number, required: true},
+    numLikes: {type:Number, required: true},
     title: {type: String, required: true},
     media: {type: String, required: false},
     likes: {type: Number, required: true}

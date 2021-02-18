@@ -7,7 +7,9 @@ const { json } = require('express');
 // import "./database";
 
 router.route('/').get((req, res) => {
-  res.send("Hello world");
+  Post.find()
+  .then(post => res.json(post))
+  .catch(err => res.status(400).json('Error: ' + err))
 })
 
 router.route('/create').post( [
@@ -19,7 +21,7 @@ router.route('/create').post( [
   // need a standard for tag case sensitivity
   check('tags').notEmpty().withMessage("Invalid tags value, should not be empty."),
   check('numComments').isNumeric().withMessage("Invalid type for numComments, should be of Number type."),
-  // check('numLikes').isNumeric().withMessage("Invalid number of likes, should be numeric"),
+  check('numLikes').isNumeric().withMessage("Invalid number of likes, should be numeric"),
   check('title').notEmpty().withMessage("Invalid title, should not be empty.")
 ], (req,res) => {
   
@@ -41,7 +43,7 @@ router.route('/create').post( [
     "numComments" : req.body.numComments,
     "title" : req.body.title,
     "media" : req.body.media,
-    "likes" : req.body.likes
+    "numLikes" : req.body.numLikes
   }
   
   const newPost = new Post(query);
