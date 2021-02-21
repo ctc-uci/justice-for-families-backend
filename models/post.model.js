@@ -12,7 +12,7 @@ const postSchema = new Schema({
     numLikes: {type:Number, required: true},
     title: {type: String, required: true},
     media: {type: String, required: false},
-    likes: {type: Number, required: true}
+    likedUsers: {type: [String]}
   }, {
     timestamps: true,
 });

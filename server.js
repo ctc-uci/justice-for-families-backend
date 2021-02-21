@@ -21,12 +21,15 @@ connection.once('open', () => {
 const postsRouter = require('./routes/posts');
 const likesRouter = require('./routes/likes');
 const commentRouter = require('./routes/comments');
+const userRouter = require('./routes/users');
+const authenticationRouter = require('./routes/authentication');
 
-app.use('/authentication', require('./routes/authentication'));
+app.use('/authentication', authenticationRouter);
 // app.use('/database', require('./routes/database'));
 app.use('/posts', postsRouter);
 app.use('/likes', likesRouter);
 app.use('/comments', commentRouter);
+app.use('/users', userRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
