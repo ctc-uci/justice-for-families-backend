@@ -72,7 +72,7 @@ router.post('/unlikeComment', function(req, res) {
     }).catch(function(error) {
         res.status(400).send(error);
     });
-    Post.updateOne({_id: new mongoose.Types.ObjectId(req.body.postId)}, {$inc: { numLikes: -1}},{$pull: {likedBy:req.body.username}}, function(err, docs) {
+    Comment.updateOne({_id: new mongoose.Types.ObjectId(req.body.postId)}, {$inc: { numLikes: -1}},{$pull: {likedBy:req.body.username}}, function(err, docs) {
         if (err) {
             res.status(400).send(err);
         }
