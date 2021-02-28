@@ -73,4 +73,16 @@ router.route('/datePosted/:datePosted').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err))
 })
 
+router.route('/:postId/user/:username/hasLiked').get((req, res) => {
+  Post.find({likedUsers : req.params.username, _id : req.params.postId})
+    .then((post) => {
+      if (!Array.isArray(post) || !post.length) {
+        res.json({"hasLiked" : false});
+      }
+      else {
+        res.json({"hasLiked" : true});
+      }
+    })
+    .catch((err) => res.status(400).json({"err when fetching comments" : err}));
+})
 module.exports = router;

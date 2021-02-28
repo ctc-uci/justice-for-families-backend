@@ -7,7 +7,7 @@ router.route('/').get((req, res) => {
   res.send("Hello World!");
 });
 
-router.route('/:postId/comments/create').post( [
+router.route('/post/:postId/create').post( [
   check('username').isLength({min:1, max:20}).withMessage("Invalid username length, should be between 1, 20."),
   check('text').isLength({min:1, max:1000}).withMessage("Invalid text length, must be between 1, 1000."),
   // check('datePosted').notEmpty().withMessage("Invalid date value, received none."),
@@ -27,8 +27,9 @@ router.route('/:postId/comments/create').post( [
     text: req.body.text,
     username: req.body.username,
     numLikes: req.body.numLikes,
-    postId: req.body.postId,
-    datePosted: new Date()
+    postId: req.params.postId,
+    datePosted: new Date(),
+    likedUsers: req.body.likedUsers
   }
   const newComment = new Comment(query);
 
@@ -49,4 +50,16 @@ router.route('/post/:postId').get((req, res) => {
     .catch(err => res.status(400).send("cannot find any comments under post: " + req.params.postId))
 })
 
+router.route('/:commentId/user/:username/hasLiked').get((req, res) => {
+  Comment.find( {likedUsers : req.params.username, _id : req.params.commentId})
+    .then((comment) => {
+      if (!Array.isArray(comment) || !comment.length) {
+        res.json({"hasLiked" : false});
+      }
+      else {
+        res.json({"hasLiked" : true});
+      }
+    })
+    .catch((err) => res.status(400).json({"err when fetching comments" : err}));
+})
 module.exports = router;
