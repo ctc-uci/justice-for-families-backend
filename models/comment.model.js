@@ -7,7 +7,8 @@ const commentSchema = new Schema({
   username: {type: String, required:true},
   numLikes: {type:Number, required:true},
   postId: {type:Schema.Types.ObjectId, required: true},
-  datePosted: {type: Date, required:false}
+  datePosted: {type: Date, required:false},
+  likedBy: {type:Array, required:true}
 }, {
   timestamps: true
 });

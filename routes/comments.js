@@ -28,7 +28,8 @@ router.route('/:postId/comments/create').post( [
     username: req.body.username,
     numLikes: req.body.numLikes,
     postId: req.body.postId,
-    datePosted: new Date()
+    datePosted: new Date(),
+    likedBy: req.body.likedBy
   }
   const newComment = new Comment(query);
 
