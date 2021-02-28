@@ -1,6 +1,6 @@
 const router = require('express').Router();
-const Amplify = require('aws-amplify')
-const { Auth } = require('aws-amplify')
+const Amplify = require('aws-amplify');
+const { Auth } = require('aws-amplify');
 
 Amplify.default.configure({
     Auth: {
@@ -12,12 +12,25 @@ Amplify.default.configure({
 });
 
 router.get('/', function(req, res) {
-    res.send("authentication")
+    res.send("authentication");
 })
 
+router.post('/changePassword', async function(req, res) {
+    const username = req.body.username;
+    const password = req.body.password;
+    const newPassword = req.body.newPassword;
+    const user = await Auth.signIn(username, password);
+    try {
+        await Auth.changePassword(user, password, newPassword);
+        res.send("password changed");
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
+
 router.post('/register', async function(req, res) {
-    const email = req.body.email
-    const password = req.body.password
+    const email = req.body.email;
+    const password = req.body.password;
     try {
         await Auth.signUp({
             username: email,
@@ -28,98 +41,76 @@ router.post('/register', async function(req, res) {
                 name: '',
                 phone_number: ''
             }
-        })
-        res.sendStatus(200) // OK
-        res.redirect('/login')
-        console.log(user)
+        });
+        res.sendStatus(200);
     } catch (error) {
-        console.log('error signing up:', error)
-        res.sendStatus(500) // server error
+        res.status(500).send(error);
     }
-})
+});
 
 router.post('/login', async function(req, res) {
     const email = req.body.email
     const password = req.body.password
     try {
         await Auth.signIn(email, password)
-        res.sendStatus(200) // OK
-        res.redirect('/logout')
+        res.sendStatus(200);
     } catch (error) {
-        console.log('error signing in', error)
-        res.sendStatus(500) // server error
+        res.status(500).send(error);
     }
-})
+});
 
 router.post('/logout', async function(req, res) {
     try {
         await Auth.signOut()
-        res.sendStatus(200) // OK
-        res.redirect('/login')
+        res.sendStatus(200);
     } catch (error) {
-        console.log('error signing out', error)
-        res.sendStatus(500) // server error
+        res.status(500).send(error);
     }
-})
+});
 
 router.post('/update/picture', async function(req, res) {
-    const user = await Auth.currentAuthenticatedUser();
-    const updatedAttribute = req.body.updatedAttribute
+    const username = req.body.username;
+    const password = req.body.password;
+    const picture = req.body.picture;
+    const user = await Auth.signIn(username, password);
     try {
         await Auth.updateUserAttributes(user, {
-            picture: updatedAttribute
+            picture: picture
         })
-        console.log(result);
-        res.sendStatus(200) // OK
+        res.sendStatus(200);
     } catch (error) {
-        console.log('error updating attribute', error)
-        res.sendStatus(500) // server error
+        res.status(500).send(error);
     }
-})
+});
 
 router.post('/update/name', async function(req, res) {
-    const user = await Auth.currentAuthenticatedUser();
-    const updatedAttribute = req.body.updatedAttribute
+    const username = req.body.username;
+    const password = req.body.password;
+    const name = req.body.name;
+    const user = await Auth.signIn(username, password);
     try {
         await Auth.updateUserAttributes(user, {
-            Name: updatedAttribute
+            name: name
         })
-        console.log(result);
-        res.sendStatus(200) // OK
+        res.sendStatus(200);
     } catch (error) {
-        console.log('error updating attribute', error)
-        res.sendStatus(500) // server error
+        res.status(500).send(error);
     }
-})
+});
 
 router.post('/update/phoneNumber', async function(req, res) {
-    const user = await Auth.currentAuthenticatedUser();
-    const updatedAttribute = req.body.updatedAttribute
+    const username = req.body.username;
+    const password = req.body.password;
+    const phoneNumber = req.body.phoneNumber;
+    const user = await Auth.signIn(username, password);
     try {
         await Auth.updateUserAttributes(user, {
-            phone_number: updatedAttribute
+            phone_number: phoneNumber
         })
-        console.log(result);
-        res.sendStatus(200) // OK
+        res.sendStatus(200);
     } catch (error) {
-        console.log('error updating attribute', error)
-        res.sendStatus(500) // server error
+        res.status(500).send(error);
     }
-})
-
-router.post('/update/preferredUserName', async function(req, res) {
-    const user = await Auth.currentAuthenticatedUser();
-    const updatedAttribute = req.body.updatedAttribute
-    try {
-        await Auth.updateUserAttributes(user, {
-            preferred_username: updatedAttribute
-        })
-        console.log(result);
-        res.sendStatus(200) // OK
-    } catch (error) {
-        console.log('error updating attribute', error)
-        res.sendStatus(500) // server error
-    }
-})
+});
 
 module.exports = router;
