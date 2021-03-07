@@ -22,7 +22,7 @@ router.post('/changePassword', async function(req, res) {
     const user = await Auth.signIn(username, password);
     try {
         await Auth.changePassword(user, password, newPassword);
-        res.send("password changed");
+        res.status(200).send("password changed");
     } catch (error) {
         res.status(500).send(error);
     }
