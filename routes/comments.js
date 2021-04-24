@@ -8,7 +8,7 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/:postId/comments/create').post( [
-  check('username').isLength({min:1, max:20}).withMessage("Invalid username length, should be between 1, 20."),
+  check('username').isLength({min:1, max:100}).withMessage("Invalid username length, should be between 1, 20."),
   check('text').isLength({min:1, max:1000}).withMessage("Invalid text length, must be between 1, 1000."),
   // check('datePosted').notEmpty().withMessage("Invalid date value, received none."),
   // need a standard for tag case sensitivity
