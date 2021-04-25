@@ -25,7 +25,6 @@ router.route('/create').post( [
   check('title').notEmpty().withMessage("Invalid title, should not be empty.")
 ], (req,res) => {
   
-  console.log("ASDFASD");
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return (res.status(400).json( {

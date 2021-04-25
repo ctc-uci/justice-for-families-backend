@@ -19,7 +19,7 @@ router.route('/post/:postId/create').post( [
 
   if (!errors.isEmpty()) {
     return res.status(400).send({
-      message: "Errors: " + errors
+      message: "Errors: "
     })
   }
   query = {
