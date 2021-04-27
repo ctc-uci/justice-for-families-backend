@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
 let Comment = require('../models/comment.model');
+const Post = require('../models/post.model');
 const { check, validationResult } = require('express-validator');
 
 router.route('/').get((req, res) => {
@@ -35,6 +36,10 @@ router.route('/:postId/comments/create').post( [
   newComment.save()
     .then(() => res.send("comment successfully added"))
     .catch(err => res.status(400).send("Error: " + err))
+
+  // increment numComments field in post
+  Post.updateOne({_id: new mongoose.Types.ObjectId(req.body.postId)}, {$inc: {numComments: 1}});
+
 })
 
 router.route('/username/:username').get((req, res) => {
