@@ -13,7 +13,7 @@ router.route('/').get((req, res) => {
 })
 
 router.route('/create').post( [
-  check('username').isLength({min:1, max:20}).withMessage("Invalid username length, should be between 1, 20."),
+  check('username').isLength({min:1, max:100}).withMessage("Invalid username length, should be between 1, 100."),
   check('text').isLength({min:1, max:1000}).withMessage("Invalid text length, must be between 1, 1000."),
   check('anonymous').isBoolean().withMessage("Invalid anonymity value, should be boolean."),
   // need a standard for date posted

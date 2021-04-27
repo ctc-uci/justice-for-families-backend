@@ -8,8 +8,8 @@ router.route('/').get((req, res) => {
   res.send("Hello World!");
 });
 
-router.route('/post/:postId/create').post( [
-  check('username').isLength({min:1, max:20}).withMessage("Invalid username length, should be between 1, 20."),
+router.route('/:postId/comments/create').post( [
+  check('username').isLength({min:1, max:100}).withMessage("Invalid username length, should be between 1, 20."),
   check('text').isLength({min:1, max:1000}).withMessage("Invalid text length, must be between 1, 1000."),
   // check('datePosted').notEmpty().withMessage("Invalid date value, received none."),
   // need a standard for tag case sensitivity
@@ -44,6 +44,10 @@ router.route('/post/:postId/create').post( [
       res.status(200).json({"success" : "comment successfully added"});
     })
     .catch(err => res.status(400).send("Error: " + err))
+
+  // increment numComments field in post
+  Post.updateOne({_id: new mongoose.Types.ObjectId(req.body.postId)}, {$inc: {numComments: 1}});
+
 })
 
 router.route('/username/:username').get((req, res) => {
