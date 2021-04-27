@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
 let Comment = require('../models/comment.model');
-const { check, validationResult } = require('express-validator');
+let Post = require('../models/post.model');
+const { check, validationResult, query } = require('express-validator');
 
 router.route('/').get((req, res) => {
   res.send("Hello World!");
@@ -22,7 +23,7 @@ router.route('/post/:postId/create').post( [
       message: "Errors: "
     })
   }
-  query = {
+  const query = {
     _id: new mongoose.Types.ObjectId(),
     text: req.body.text,
     username: req.body.username,
@@ -32,9 +33,16 @@ router.route('/post/:postId/create').post( [
     likedUsers: req.body.likedUsers
   }
   const newComment = new Comment(query);
-
+  var resString = "";
   newComment.save()
-    .then(() => res.send("comment successfully added"))
+    .then(() => {
+      Post.updateOne({"_id": req.params.postId}, {$inc : {"numComments" : 1}})
+      .then(() => {
+        console.log("incrementing numComments in post with id: " + req.params.postId);
+      })
+      .catch((e)=>res.status(400).json({"err": "can't find post w/ id: " + req.params.postId}));
+      res.status(200).json({"success" : "comment successfully added"});
+    })
     .catch(err => res.status(400).send("Error: " + err))
 })
 
