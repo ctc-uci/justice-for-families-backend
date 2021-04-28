@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
+const { check, validationResult } = require('express-validator');
 const Like = require('../models/like.model');
 const Post = require('../models/post.model');
 const User = require('../models/user.model');
@@ -41,5 +42,41 @@ router.post('/unlike', async function(req, res) {
     // remove from likedPosts in user
     await User.updateOne({username: req.body.username}, {$pull: {likedPosts: req.body.postId}});
 });
+
+router.post(
+  "/byUser",
+  [
+    check("username")
+      .isLength({ min: 1, max: 100 })
+      .withMessage("Invalid username length, should be between 1, 100."),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: errors.array(),
+      });
+    }
+
+    const { username } = req.body;
+
+    try {
+      let likedPostIds = await Like.find()
+        .where("username", username)
+        .select("postId -_id")
+        .exec();
+      likedPostIds = likedPostIds.map((likedPostId) => likedPostId.postId);
+    //   console.log(likedPostIds);
+
+      const likedPosts = await Post.find().where("_id", likedPostIds).exec();
+    //   console.log(likedPosts);
+
+      res.status(200).send(likedPosts);
+    } catch (err) {
+      console.log(err);
+      res.send(500);
+    }
+  }
+);
 
 module.exports = router;
