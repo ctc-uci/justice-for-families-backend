@@ -182,6 +182,24 @@ router.route("/delete").post(
   }
 );
 
+router.route("/id").get(
+  [
+    check("postID")
+      .exists()
+      .custom((value, { req }) => mongoose.isValidObjectId(value))
+      .withMessage("Invalid postID, should be a valid MongoDB ObjectID"),
+  ], (req, res) => {
+    const { postID } = req.body;
+    Post.findById(postID, function(err, post) {
+      if (err) {
+        console.log(err);
+        res.status(500).json('Error: ' + err);
+      } else {
+        res.status(200).json(post);
+      }
+    });
+});
+
 // need to update to find tag within tags array (might take a long time to load though)
 router.route('/tags/:tag').get((req, res) => {
   Post.find({tags: req.params.tag})
