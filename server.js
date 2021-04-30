@@ -25,6 +25,7 @@ const userRouter = require('./routes/users');
 const authenticationRouter = require('./routes/authentication');
 const tagsRouter = require('./routes/tags');
 const activityRouter = require('./routes/activity');
+const s3UploadRouter = require('./routes/s3Upload');
 
 app.use('/authentication', authenticationRouter);
 app.use('/posts', postsRouter);
@@ -33,6 +34,7 @@ app.use('/comments', commentRouter);
 app.use('/users', userRouter);
 app.use('/tags', tagsRouter);
 app.use('/activity', activityRouter);
+app.use('/s3Upload', s3UploadRouter);
 
 app.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
