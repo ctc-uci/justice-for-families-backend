@@ -1,6 +1,23 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const newPostSchema = new Schema({
+  _id: {type: mongoose.Schema.Types.ObjectId},
+  text: {type: String, required: true},
+  username: {type: String, required: true},
+  anonymous: {type: Boolean, required: true},
+  tags: {type: [String], required: true},  // updated schema
+  // datePosted: {type: Date, required:false},  // mongodb builtin _createdby attribute, will remap _createdby to datePosted for compatability
+  comments: {type: [Schema.Types.ObjectId]}, // SQL-like relation
+  // numComments: {type: Number, required: true}, // computable from comments.length
+  // numLikes: {type:Number, required: true}, // computable from likedUsers.length
+  title: {type: String, required: true},
+  // media: {type: String, required: false}, // deprecated
+  likedUsers: {type: [Schema.Types.ObjectId]}, // keep it consistent with comments, seperating is better for "find all posts a particular liked" query
+}, {
+  timestamps: true,
+});
+
 const postSchema = new Schema({
     _id: {type: mongoose.Schema.Types.ObjectId},
     text: {type: String, required: true},
