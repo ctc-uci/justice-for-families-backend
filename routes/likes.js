@@ -9,7 +9,7 @@ router.post('/like', async function(req, res) {
     query = {
         "_id": new mongoose.Types.ObjectId(),
         "username": req.body.username,
-        "date": new Date(),
+        // "date": new Date(),
         "postId": new mongoose.Types.ObjectId(req.body.postId)
     }
     const newLike = new Like(query);
