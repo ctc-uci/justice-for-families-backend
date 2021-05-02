@@ -11,9 +11,6 @@ router.route('/').get((req, res) => {
 router.route('/:postId/comments/create').post( [
   check('username').isLength({min:1, max:100}).withMessage("Invalid username length, should be between 1, 20."),
   check('text').isLength({min:1, max:1000}).withMessage("Invalid text length, must be between 1, 1000."),
-  // check('datePosted').notEmpty().withMessage("Invalid date value, received none."),
-  // need a standard for tag case sensitivity
-  check('numLikes').isNumeric().withMessage("Invalid type for numComments, should be of Number type."),
 ], (req, res) => {
 
   const errors = validationResult(req);
@@ -27,13 +24,9 @@ router.route('/:postId/comments/create').post( [
     _id: new mongoose.Types.ObjectId(),
     text: req.body.text,
     username: req.body.username,
-    numLikes: req.body.numLikes,
     postId: req.params.postId,
-    datePosted: new Date(),
-    likedUsers: req.body.likedUsers
   }
   const newComment = new Comment(query);
-  var resString = "";
   newComment.save()
     .then(() => {
       Post.updateOne({"_id": req.params.postId}, {$inc : {"numComments" : 1}})
@@ -52,13 +45,25 @@ router.route('/:postId/comments/create').post( [
 
 router.route('/username/:username').get((req, res) => {
   Comment.find({username: req.params.username})
-    .then(comment => res.json(comment))
+    .then(comments => res.send(comments.map(comment => ({
+      _id: comment._id,
+      text: comment.text,
+      username: comment.username,
+      postId: comment.postId,
+      datePosted: comment.createdAt
+    }))))
     .catch(err => res.status(400).send("cannot find any comments under username: " + req.params.username))
 })
 
 router.route('/post/:postId').get((req, res) => {
   Comment.find({postId: req.params.postId})
-    .then(comment => res.json(comment))
+    .then(comments => res.send(comments.map(comment => ({
+      _id: comment._id,
+      text: comment.text,
+      username: comment.username,
+      postId: comment.postId,
+      datePosted: comment.createdAt
+    }))))
     .catch(err => res.status(400).send("cannot find any comments under post: " + req.params.postId))
 })
 

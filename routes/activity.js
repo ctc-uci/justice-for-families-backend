@@ -37,9 +37,9 @@ router
         const commentsQuery = Comment.find();
         commentsQuery.where("postId", postIds);
         if (startingFrom) {
-          commentsQuery.where("datePosted").gte(startingFrom);
+          commentsQuery.where("createdAt").gte(startingFrom);
         }
-        commentsQuery.select("_id postId username datePosted text");
+        commentsQuery.select("_id postId username createdAt text");
         const comments = await commentsQuery.exec();
         // console.log(comments);
 
@@ -61,7 +61,7 @@ router
             postText: postsMappedById[comment.postId].text,
             commentID: comment._id,
             commentUsername: comment.username,
-            commentDatePosted: comment.datePosted,
+            commentDatePosted: comment.createdAt,
             commentText: comment.text,
           })),
         };
