@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const { check, validationResult } = require('express-validator');
 const Like = require('../models/like.model');
 const Post = require('../models/post.model');
-const User = require('../models/user.model');
 
 router.post('/like', async function(req, res) {
     query = {
@@ -20,9 +19,6 @@ router.post('/like', async function(req, res) {
 
     // append to likedUsers array in post
     await Post.updateOne({_id: new mongoose.Types.ObjectId(req.body.postId)}, {$push: {likedUsers: req.body.username}});
-
-    // append to likedPosts in user
-    await User.updateOne({username: req.body.username}, {$push: {likedPosts: req.body.postId}});
 });
 
 router.post('/unlike', async function(req, res) {
@@ -38,9 +34,6 @@ router.post('/unlike', async function(req, res) {
 
     // remove from likedUsers array in post
     await Post.updateOne({_id: new mongoose.Types.ObjectId(req.body.postId)}, {$pull: {likedUsers: req.body.username}});
-
-    // remove from likedPosts in user
-    await User.updateOne({username: req.body.username}, {$pull: {likedPosts: req.body.postId}});
 });
 
 router.post(
