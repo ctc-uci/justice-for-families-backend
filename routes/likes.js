@@ -71,7 +71,7 @@ router.post(
       const likedPosts = await Post.find().where("_id", likedPostIds).exec();
     //   console.log(likedPosts);
 
-      res.status(200).send(likedPosts);
+      res.status(200).json(likedPosts);
     } catch (err) {
       console.log(err);
       res.send(500);
