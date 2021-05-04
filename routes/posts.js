@@ -182,15 +182,16 @@ router.route("/delete").post(
   }
 );
 
-router.route("/id").get(
+router.route('/id').post(
   [
-    check("postID")
+    check("postId")
       .exists()
       .custom((value, { req }) => mongoose.isValidObjectId(value))
-      .withMessage("Invalid postID, should be a valid MongoDB ObjectID"),
-  ], (req, res) => {
-    const { postID } = req.body;
-    Post.findById(postID, function(err, post) {
+      .withMessage("Invalid postId, should be a valid MongoDB ObjectID"),
+  ], 
+  (req, res) => {
+    Post.findById(req.body.postId, function(err, post) {
+      console.log("post", post);
       if (err) {
         console.log(err);
         res.status(500).json('Error: ' + err);
