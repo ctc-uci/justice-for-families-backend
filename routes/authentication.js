@@ -4,9 +4,9 @@ const { Auth } = require('aws-amplify');
 
 Amplify.default.configure({
     Auth: {
-        region: 'us-west-2',
-        userPoolId: 'us-west-2_hUKpIERJA',
-        userPoolWebClientId: '6a1ajlec5n4v7tuserdu8p01ql',
+        region: process.env.AWS_REGION,
+        userPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
+        userPoolWebClientId: process.env.AWS_COGNITO_USER_POOL_WEB_CLIENT_ID,
         mandatorySignIn: true,
     }
 });
