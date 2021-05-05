@@ -22,36 +22,60 @@ router.route('/like').post([
     "date": new Date(),
     "postId": new mongoose.Types.ObjectId(req.body.postId)
   }
-  const newLike = new Like(query);
-  await newLike.save().then(() => res.status(200).send("liked")).catch(err => res.status(400).json("Error: " + err))
 
-  // increment likes field in post
-  await Post.updateOne({
-    _id: new mongoose.Types.ObjectId(req.body.postId)
-  }, {
-    $inc: {
-      numLikes: 1
+  var foundLike = false;
+
+  await Like.findOne({
+    $and: [{
+        "username": req.body.username
+      },
+      {
+        "postId": req.body.postId
+      }
+    ]
+  }, (err, docs) => {
+    if (docs) {
+      foundLike = true;
+      res.status(400).json({
+        errMsg: "error, like was already found",
+        likeDoc: docs,
+      })
     }
   });
 
-  // append to likedUsers array in post
-  await Post.updateOne({
-    _id: new mongoose.Types.ObjectId(req.body.postId)
-  }, {
-    $push: {
-      likedUsers: req.body.username
-    }
-  });
+  if (!foundLike) {
+    const newLike = new Like(query);
+    await newLike.save().then(() => res.status(200).send("liked")).catch(err => res.status(400).json("Error: " + err))
 
-  // append to likedPosts in user
-  await User.updateOne({
-    username: req.body.username
-  }, {
-    $push: {
-      likedPosts: req.body.postId
-    }
-  });
+    // increment likes field in post
+    await Post.updateOne({
+      _id: new mongoose.Types.ObjectId(req.body.postId)
+    }, {
+      $inc: {
+        numLikes: 1
+      }
+    });
+
+    // append to likedUsers array in post
+    await Post.updateOne({
+      _id: new mongoose.Types.ObjectId(req.body.postId)
+    }, {
+      $push: {
+        likedUsers: req.body.username
+      }
+    });
+
+    // append to likedPosts in user
+    await User.updateOne({
+      username: req.body.username
+    }, {
+      $push: {
+        likedPosts: req.body.postId
+      }
+    });
+  }
 });
+
 
 router.route('/unlike').post([
   check('username').notEmpty().withMessage("Invalid username, should not be empty"),
@@ -60,7 +84,6 @@ router.route('/unlike').post([
     max: 100
   }).withMessage("Invalid username length, should be between 1, 100."),
   check('postId').notEmpty().withMessage("Invalid post id, should not be empty"),
-  check('id').notEmpty().withMessage("Invalid post id, should not be empty"),
 ], async function (req, res) {
   // check for errs
   const errors = validationResult(req);
@@ -69,52 +92,72 @@ router.route('/unlike').post([
       message: errors.array()
     })
   }
+
+  var likeNotFound = false;
+
   await Like.findOne({
-    _id: new mongoose.Types.ObjectId(req.body.id),
+    $and: [{
+        "username": req.body.username
+      },
+      {
+        "postId": req.body.postId
+      }
+    ]
   }, (err, docs) => {
-    if (err || !docs) {
+    if (!docs) {
+      likeNotFound = true;
       res.status(400).json({
         errMsg: "error, could not find like",
-        likeId: req.body.id,
-        valueOfLike: err
-      });
-    }
-  });
-  // delete like
-  await Like.deleteOne({
-    _id: new mongoose.Types.ObjectId(req.body.id)
-  }).then(function () {
-    res.status(200).send("like deleted");
-  }).catch(function (error) {
-    res.status(400).send(error);
-  });
-
-  // decrement likes field in post
-  await Post.updateOne({
-    _id: new mongoose.Types.ObjectId(req.body.postId)
-  }, {
-    $inc: {
-      numLikes: -1
+        likeDoc: docs,
+      })
+    } else {
+      res.status(200).json(docs);
     }
   });
 
-  // remove from likedUsers array in post
-  await Post.updateOne({
-    _id: new mongoose.Types.ObjectId(req.body.postId)
-  }, {
-    $pull: {
-      likedUsers: req.body.username
-    }
-  });
+  if (!likeNotFound) {
+    // delete like
+    await Like.deleteOne({
+      $and: [{
+          "username": req.body.username
+        },
+        {
+          "postId": req.body.postId
+        }
+      ]
+    }).then(function () {
+      res.status(200).send("like deleted");
+    }).catch(function (error) {
+      res.status(400).send(error);
+    });
 
-  // remove from likedPosts in user
-  await User.updateOne({
-    username: req.body.username
-  }, {
-    $pull: {
-      likedPosts: req.body.postId
-    }
-  });
+    // decrement likes field in post
+    await Post.updateOne({
+      _id: new mongoose.Types.ObjectId(req.body.postId)
+    }, {
+      $inc: {
+        numLikes: -1
+      }
+    });
+
+    // remove from likedUsers array in post
+    await Post.updateOne({
+      _id: new mongoose.Types.ObjectId(req.body.postId)
+    }, {
+      $pull: {
+        likedUsers: req.body.username
+      }
+    });
+
+    // remove from likedPosts in user
+    await User.updateOne({
+      username: req.body.username
+    }, {
+      $pull: {
+        likedPosts: req.body.postId
+      }
+    });
+  }
 });
 
 router.post(
