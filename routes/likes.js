@@ -23,8 +23,6 @@ router.route('/like').post([
     "postId": new mongoose.Types.ObjectId(req.body.postId)
   }
 
-  var foundLike = false;
-
   try {
     const docs = await Like.findOne({
       $and: [{
