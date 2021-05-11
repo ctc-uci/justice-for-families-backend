@@ -7,15 +7,20 @@ const {
 const Like = require('../models/like.model');
 const Post = require('../models/post.model');
 const User = require('../models/user.model');
-const { whetherEmailIsRegistered } = require('../utils');
+const {
+  whetherEmailIsRegistered
+} = require('../utils');
 
 
 router.route('/like').post([
-  check('username').notEmpty().withMessage("Invalid username, should not be empty"),
-  check('username').isLength({
-    min: 1,
-    max: 100
-  }).withMessage("Invalid username length, should be between 1, 100."),
+  check('username')
+    .notEmpty()
+    .withMessage("Invalid username, should not be empty")
+    .isLength({
+      min: 1,
+      max: 100
+    })
+    .withMessage("Invalid username length, should be between 1, 100."),
   check('postId').notEmpty().withMessage("Invalid post id, should not be empty")
 ], async function (req, res) {
   const errors = validationResult(req);
@@ -47,8 +52,7 @@ router.route('/like').post([
         errMsg: "error, like was already found",
         likeDoc: docs,
       })
-    }
-    else if (!await whetherEmailIsRegistered(req.body.username)) {
+    } else if (!await whetherEmailIsRegistered(req.body.username)) {
       res.status(400).json({
         errMsg: "error, user is not registered",
       })
@@ -97,11 +101,14 @@ router.route('/like').post([
 
 
 router.route('/unlike').post([
-  check('username').notEmpty().withMessage("Invalid username, should not be empty"),
-  check('username').isLength({
-    min: 1,
-    max: 100
-  }).withMessage("Invalid username length, should be between 1, 100."),
+  check('username')
+    .notEmpty()
+    .withMessage("Invalid username, should not be empty")
+    .isLength({
+      min: 1,
+      max: 100
+    })
+    .withMessage("Invalid username length, should be between 1, 100."),
   check('postId').notEmpty().withMessage("Invalid post id, should not be empty"),
 ], async function (req, res) {
   // check for errs
@@ -127,14 +134,13 @@ router.route('/unlike').post([
         errMsg: "error, could not find like",
         likeDoc: docs,
       })
-    } 
+    }
     // sanity check to see if user is registered (will never hit this error though since the above error will be caught first )
     else if (!await whetherEmailIsRegistered(req.body.username)) {
       res.status(400).json({
         errMsg: "error, user is not registered",
       })
-    }
-    else {
+    } else {
       await Like.deleteOne({
         $and: [{
             "username": req.body.username
