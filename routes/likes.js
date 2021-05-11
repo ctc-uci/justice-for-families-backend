@@ -20,7 +20,7 @@ router.route('/like').post([
 ], async function (req, res) {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    res.status(400).json({
+    return res.status(400).json({
       message: errors.array()
     })
   }
@@ -107,7 +107,7 @@ router.route('/unlike').post([
   // check for errs
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    res.status(400).json({
+    return res.status(400).json({
       message: errors.array()
     })
   }
