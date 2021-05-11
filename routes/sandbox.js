@@ -1,6 +1,6 @@
 // this file is for testing purposes only
 const router = require('express').Router();
-const { whetherEmailIsRegistered, getUserByEmail } = require('../utils');
+const { whetherEmailIsRegistered, getUserByEmail, getUserProfilePic } = require('../utils');
 
 router.get('/testEmail', async function(req, res) {
     if (await whetherEmailIsRegistered(req.body.email)){

@@ -2,7 +2,8 @@ const router = require('express').Router();
 const Amplify = require('aws-amplify');
 const { Auth } = require('aws-amplify');
 const AwsSdk = require("aws-sdk");
-const { getUserByEmail } = require('../utils');
+const { getUserByEmail, getUserProfilePic } = require('../utils');
+const { check, validationResult } = require('express-validator');
 
 Amplify.default.configure({
     Auth: {
@@ -15,16 +16,16 @@ Amplify.default.configure({
 
 AwsSdk.config.setPromisesDependency();
 AwsSdk.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION,
 });
 
-router.get('/', function(req, res) {
+router.get('/', function (req, res) {
     res.send("authentication");
 })
 
-router.post('/changePassword', async function(req, res) {
+router.post('/changePassword', async function (req, res) {
     const username = req.body.username;
     const password = req.body.password;
     const newPassword = req.body.newPassword;
@@ -37,7 +38,7 @@ router.post('/changePassword', async function(req, res) {
     }
 });
 
-router.post('/register', async function(req, res) {
+router.post('/register', async function (req, res) {
     const email = req.body.email;
     const password = req.body.password;
     try {
@@ -57,7 +58,7 @@ router.post('/register', async function(req, res) {
     }
 });
 
-router.post('/login', async function(req, res) {
+router.post('/login', async function (req, res) {
     const email = req.body.email
     const password = req.body.password
     try {
@@ -68,7 +69,7 @@ router.post('/login', async function(req, res) {
     }
 });
 
-router.post('/logout', async function(req, res) {
+router.post('/logout', async function (req, res) {
     try {
         await Auth.signOut()
         res.sendStatus(200);
@@ -77,11 +78,11 @@ router.post('/logout', async function(req, res) {
     }
 });
 
-router.post('/update/picture', async function(req, res) {
+router.post('/update/picture', async function (req, res) {
     const email = req.body.email;
     const picture = req.body.picture;
     try {
-        const user = await getUserByEmail(email); 
+        const user = await getUserByEmail(email);
         if (!user) {
             res.status(400).send("Could not find user");
             return;
@@ -90,13 +91,11 @@ router.post('/update/picture', async function(req, res) {
         const cognito = new AwsSdk.CognitoIdentityServiceProvider();
         const params = {
             UserPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
-            Username: user.Username, 
-            UserAttributes: [ 
-                {
-                  Name: 'picture', 
-                  Value: picture
-                },
-              ],
+            Username: user.Username,
+            UserAttributes: [{
+                Name: 'picture',
+                Value: picture
+            }, ],
         };
         await cognito.adminUpdateUserAttributes(params).promise();
         res.status(200).send();
@@ -105,7 +104,7 @@ router.post('/update/picture', async function(req, res) {
     }
 });
 
-router.post('/update/name', async function(req, res) {
+router.post('/update/name', async function (req, res) {
     const username = req.body.username;
     const password = req.body.password;
     const name = req.body.name;
@@ -120,7 +119,7 @@ router.post('/update/name', async function(req, res) {
     }
 });
 
-router.post('/update/phoneNumber', async function(req, res) {
+router.post('/update/phoneNumber', async function (req, res) {
     const username = req.body.username;
     const password = req.body.password;
     const phoneNumber = req.body.phoneNumber;
@@ -134,5 +133,26 @@ router.post('/update/phoneNumber', async function(req, res) {
         res.status(500).send(error);
     }
 });
+
+router.get('/profilepic/get',
+    [
+        check("email")
+        .notEmpty()
+        .withMessage("Invalid email, should not be empty")
+        .isLength({
+            min: 1,
+            max: 100
+        })
+        .withMessage("Invalid email length, should be between 1, 100."),
+    ], async function (req, res) {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                message: errors.array(),
+            });
+        }
+        const pfp = await getUserProfilePic(req.body.email);
+        return pfp.error ? res.status(400).send(pfp) : res.status(200).send(pfp);
+    })
 
 module.exports = router;

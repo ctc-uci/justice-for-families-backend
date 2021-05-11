@@ -1,3 +1,6 @@
+const {
+  CognitoIdentity
+} = require("aws-sdk");
 const AwsSdk = require("aws-sdk");
 
 AwsSdk.config.setPromisesDependency();
@@ -51,10 +54,35 @@ const getUserByEmail = async (email) => {
         "UserStatus": "CONFIRMED"
     }
   */
-  return response.Users.pop()
+  return response.Users.pop();
 };
 
+const getUserProfilePic = async (email) => {
+  const cognito = new AwsSdk.CognitoIdentityServiceProvider();
+
+  const params = {
+    UserPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
+    Filter: `email = "${email}"`,
+    AttributesToGet: [
+      'picture'
+    ]
+  };
+
+  try {
+    const response = await cognito.listUsers(params).promise();
+    // should be Users[0] b/c emails are unique and response will then contain one user
+    // only getting 1 attribute, so attribute 0 will contain {Name: 'picture', Value: 'pfpValue'}
+    return response.Users.pop().Attributes.pop().Value;
+  } catch (err) {
+    return ({
+      'error w/ fetching user using given email': email,
+      'error' : err.stack
+    });
+  }
+}
+
 module.exports = {
-    whetherEmailIsRegistered,
-    getUserByEmail
+  whetherEmailIsRegistered,
+  getUserByEmail,
+  getUserProfilePic
 }
