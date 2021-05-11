@@ -7,6 +7,8 @@ const {
 const Like = require('../models/like.model');
 const Post = require('../models/post.model');
 const User = require('../models/user.model');
+const { whetherEmailIsRegistered } = require('../utils');
+
 
 router.route('/like').post([
   check('username').notEmpty().withMessage("Invalid username, should not be empty"),
@@ -38,6 +40,11 @@ router.route('/like').post([
       res.status(400).json({
         errMsg: "error, like was already found",
         likeDoc: docs,
+      })
+    }
+    else if (!await whetherEmailIsRegistered(req.body.username)) {
+      res.status(400).json({
+        errMsg: "error, user is not registered",
       })
     }
     // like doesn't already exist, create new one
@@ -114,7 +121,14 @@ router.route('/unlike').post([
         errMsg: "error, could not find like",
         likeDoc: docs,
       })
-    } else {
+    } 
+    // sanity check to see if user is registered (will never hit this error though since the above error will be caught first )
+    else if (!await whetherEmailIsRegistered(req.body.username)) {
+      res.status(400).json({
+        errMsg: "error, user is not registered",
+      })
+    }
+    else {
       await Like.deleteOne({
         $and: [{
             "username": req.body.username
