@@ -20,7 +20,7 @@ router.route('/like').post([
     "_id": new mongoose.Types.ObjectId(),
     "username": req.body.username,
     "date": new Date(),
-    "postId": new mongoose.Types.ObjectId(req.body.postId)
+    "postId": req.body.postId
   }
 
   try {
@@ -48,7 +48,7 @@ router.route('/like').post([
 
       // increment likes field in post
       await Post.updateOne({
-        _id: new mongoose.Types.ObjectId(req.body.postId)
+        _id: req.body.postId
       }, {
         $inc: {
           numLikes: 1
@@ -57,7 +57,7 @@ router.route('/like').post([
 
       // append to likedUsers array in post
       await Post.updateOne({
-        _id: new mongoose.Types.ObjectId(req.body.postId)
+        _id: req.body.postId
       }, {
         $push: {
           likedUsers: req.body.username
@@ -128,7 +128,7 @@ router.route('/unlike').post([
 
       // decrement likes field in post
       await Post.updateOne({
-        _id: new mongoose.Types.ObjectId(req.body.postId)
+        _id: req.body.postId
       }, {
         $inc: {
           numLikes: -1
@@ -137,7 +137,7 @@ router.route('/unlike').post([
 
       // remove from likedUsers array in post
       await Post.updateOne({
-        _id: new mongoose.Types.ObjectId(req.body.postId)
+        _id: req.body.postId
       }, {
         $pull: {
           likedUsers: req.body.username
