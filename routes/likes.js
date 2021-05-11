@@ -35,7 +35,6 @@ router.route('/like').post([
     })
 
     if (docs) {
-      foundLike = true;
       res.status(400).json({
         errMsg: "error, like was already found",
         likeDoc: docs,
