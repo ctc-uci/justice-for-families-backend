@@ -214,6 +214,14 @@ router.route('/username/:username').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err))
 })
 
+//used to get user's post when someone else views profile (difference is anonymous posts should not be shown)
+router.route('/visitor/username/:username').get((req, res) => {
+  Post.find({username: req.params.username}).find({"anonymous": false})
+    .then(post => res.json(post))
+    .catch(err => res.status(400).json('Error: ' + err))
+})
+
+
 router.route('/datePosted/:datePosted').get((req, res) => {
   Post.find({datePosted: req.params.datePosted})
     .then(post => res.json(post))
