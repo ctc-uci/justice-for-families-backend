@@ -18,6 +18,12 @@ router.route('/like').post([
   }).withMessage("Invalid username length, should be between 1, 100."),
   check('postId').notEmpty().withMessage("Invalid post id, should not be empty")
 ], async function (req, res) {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(400).json({
+      message: errors.array()
+    })
+  }
   query = {
     "_id": new mongoose.Types.ObjectId(),
     "username": req.body.username,
