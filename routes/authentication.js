@@ -1,14 +1,23 @@
 const router = require('express').Router();
 const Amplify = require('aws-amplify');
 const { Auth } = require('aws-amplify');
+const AwsSdk = require("aws-sdk");
+const { getUserByEmail } = require('../utils');
 
 Amplify.default.configure({
     Auth: {
-        region: 'us-west-2',
-        userPoolId: 'us-west-2_hUKpIERJA',
-        userPoolWebClientId: '6a1ajlec5n4v7tuserdu8p01ql',
+        region: process.env.AWS_REGION,
+        userPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
+        userPoolWebClientId: process.env.AWS_COGNITO_USER_POOL_WEB_CLIENT_ID,
         mandatorySignIn: true,
     }
+});
+
+AwsSdk.config.setPromisesDependency();
+AwsSdk.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
 });
 
 router.get('/', function(req, res) {
@@ -69,15 +78,28 @@ router.post('/logout', async function(req, res) {
 });
 
 router.post('/update/picture', async function(req, res) {
-    const username = req.body.username;
-    const password = req.body.password;
+    const email = req.body.email;
     const picture = req.body.picture;
-    const user = await Auth.signIn(username, password);
     try {
-        await Auth.updateUserAttributes(user, {
-            picture: picture
-        })
-        res.sendStatus(200);
+        const user = await getUserByEmail(email); 
+        if (!user) {
+            res.status(400).send("Could not find user");
+            return;
+        }
+
+        const cognito = new AwsSdk.CognitoIdentityServiceProvider();
+        const params = {
+            UserPoolId: process.env.AWS_COGNITO_USER_POOL_ID,
+            Username: user.Username, 
+            UserAttributes: [ 
+                {
+                  Name: 'picture', 
+                  Value: picture
+                },
+              ],
+        };
+        await cognito.adminUpdateUserAttributes(params).promise();
+        res.status(200).send();
     } catch (error) {
         res.status(500).send(error);
     }
