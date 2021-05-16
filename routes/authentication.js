@@ -134,7 +134,7 @@ router.post('/update/phoneNumber', async function (req, res) {
     }
 });
 
-router.get('/profilepic/get',
+router.post('/profilepic/get',
     [
         check("email")
         .notEmpty()
